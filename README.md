@@ -1,11 +1,10 @@
 # jamfutil
 
-Utility for updating Patch Management in JSS
-Python 3 experimentation
+Utility for updating Patch Management in JSS natively in Python
 
 This is a util for maintaining Jamf Pro via command-line
 
-# A work in progress
+# A Work in Progress
 
 This library is nowhere near finished, I submitted it to allow a colleague to help with its development.
 
@@ -35,17 +34,32 @@ EOT
 
 The username and password provided will have to be added and given the appropriate access rights 
 
+# Running Tests
+
+```bash
+$> cd jamfutil
+
+# runs all tests
+$> python3 -m unittest discover -v
+
+# run tests individually
+$> python3 -m jamf.tests.test_convert
+```
 
 # A Few Examples
 
 The api can be interacted with via python3 shell
 
-`> python3`
+```bash
+$> cd jamfutil
+$> python3
+```
 
 ```python
 import pprint
-import jamf
 import logging
+
+import jamf
 
 fmt = '%(asctime)s: %(levelname)8s: %(name)s - %(funcName)s(): %(message)s'
 logging.basicConfig(level=logging.DEBUG, format=fmt)
@@ -62,7 +76,7 @@ all_policies = jss.get('policies')
 pprint.pprint(all_policies)
 
 # get all categories
-categories = jamf.policy.categories(jss)
+categories = jamf.categories(jss)
 
 category_names = [x['name'] for x in categories]
 
@@ -72,5 +86,33 @@ print(f"first category: {category_names[0]}")
 policies = jamf.policy.policies_in_categories(jss, categories[0:2])
 pprint.pprint(policies)
 ```
+
+## Packages
+
+As of `1.1` Policy packages can be modified using the following:
+
+```python
+import jamf
+
+# create an jamf.API object (requires requests lib)
+logger.debug("creating api")
+jss = jamf.API(config='private/jss.plist')
+
+policy = jamf.Policy(jss, name="Policy Name")
+
+# add a package named "example.pkg" to the policy (must exist in JSS)
+policy.add_package("example.pkg")
+
+# remove "example.pkg" from the policy
+policy.remove_package("example.pkg")
+
+# add "example.pkg" to be cached
+policy.add_package("example.pkg", action="Cache")
+
+# remove all packages for policy
+policy.remove_all_packages()
+
+```
+
 
 That's all I have currently
